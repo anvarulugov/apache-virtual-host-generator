@@ -11,10 +11,9 @@ html_dir = 'public_html'
 # enter apache vhosts directory path
 apache_hosts = '/etc/apache2/sites-available'
 
-print "VirtualHost generatoriga xush kelibsiz."
-print """
-Ushbu script apache2 da VirtualHost generatsiya qiladi, buning uchun siz avval scriptni o'zingizga moslab olishingiz va keyin script ishga tushirganda virtual domain nomini kiritishingiz kerak bo'ladi. 
-Diqqat: ushbu script ishlashi uchun uni root huquqi bilan ishga tushirishingiz kerak"""
+print "Welcome to VirtualHost generator!"
+print """This script generates VirtualHost on Apache 2. First you have to adjust the script according to your needs. As the script starts working, you will have to enter your virtual domain name. 
+Note: You have to get root permissions for the script to work."""
 
 def vhostdata( domain ):
 	data = """<VirtualHost *:80>
@@ -40,28 +39,28 @@ def vhostdata( domain ):
 
 def vhostcreate(domain):
 	if domain:
-		confirm = raw_input("Siz kiritgan domain: %s.\n Domainni to'g'ri kiritinganligingizni tasdiqlaysizmi? [y/n]" % domain)
+		confirm = raw_input("You have entered this domain: %s.\n Do you confirm this is correct? [y/n]" % domain)
 		vhostfile = domain + '.conf'
 		if confirm == 'y':
 			vhostfile = apache_hosts + '/' + vhostfile
 			if os.path.isfile(vhostfile) is True:
-				print "%s nomli domain allaqachon qo'shilgan." % domain
-				vhostcreate( raw_input('Iltimos, domain nomini kiriting: ') )
+				print "%s domain has already been added." % domain
+				vhostcreate( raw_input('Please, enter domain name: ') )
 			else:
 				vhfile = open(vhostfile, 'w')
 				vhfile.write(vhostdata(domain))
 				vhfile.close()
 				print ""
-				update_hosts = raw_input('VHost generatsiya qilindi!\n \'hosts\' faylga yangi domain qo\'shilsinmi? [y/n]: ')
+				update_hosts = raw_input('VHost was generated successfully!\n Do you want to add new domain to \'hosts\' file? [y/n]: ')
 				if update_hosts == 'y':
 					hostsfile = open('/etc/hosts', 'a')
 					hostsfile.write("""127.0.0.1\t%s""" % domain)
 					hostsfile.close()				
-				generate_home_dir = raw_input('Sayt uchun papkalar ham yaratilsinmi? [y/n]: ')
+				generate_home_dir = raw_input('Do you want to create folders for the website? [y/n]: ')
 				if generate_home_dir == 'y':
 					home_dir_html = sites_dir + '/' + domain + '/' + html_dir
 					home_dir_logs = sites_dir + '/' + domain + '/' + 'logs'
-					print "Sayt papkalari quyidagi ko'rinishda generatsiya qilinadi: \n%s \n%s\n agar ushbu manzilda shunday nomlangan papkalar bo'lsa unda yangi papka yaratilmaydi" % (home_dir_html,home_dir_logs)
+					print "Website folders will be created as following: \n%s \n%s\n If there is such named directory, then the directory will not be created." % (home_dir_html,home_dir_logs)
 					if not os.path.exists(home_dir_html):
 						# creating http directory
 						os.makedirs(home_dir_html)
@@ -80,10 +79,10 @@ def vhostcreate(domain):
 						os.chown(home_dir_logs, uid, gid)
 				os.system("a2ensite %s" % domain)
 				os.system("service apache2 reload")
-				print "Buyruqlar bajarildi! Iltimos, tekshrib ko'ring."
+				print "All done! Please, take your time to check."
 		else:
-			vhostcreate( raw_input('Iltimos, domain nomini kiriting: ') )
+			vhostcreate( raw_input('Please, enter domain name: ') )
 	else:
-		vhostcreate( raw_input('Iltimos, domain nomini kiriting: ') )
+		vhostcreate( raw_input('Please, enter domain name: ') )
 
-vhostcreate( raw_input('Iltimos, domain nomini kiriting: ') )
+vhostcreate( raw_input('Please, enter domain name: ') )
