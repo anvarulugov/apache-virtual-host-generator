@@ -1,3 +1,4 @@
+# Works with Python 2
 # Python Virtual Host generator script
 import sys, os, pwd, grp
 
